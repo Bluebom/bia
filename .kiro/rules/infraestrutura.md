@@ -1,4 +1,4 @@
-# Regras de Infraestrutura - Projeto BIA
+# Regras de Infraestrutura - Projeto luzia
 
 ## Arquitetura Base
 - **Plataforma:** ECS com cluster de instâncias EC2
@@ -28,15 +28,15 @@
 ## Padrão de Nomenclatura
 
 ### Prefixo Padrão
-- **Prefixo:** `bia` (nome do projeto)
+- **Prefixo:** `luzia` (nome do projeto)
 
 ### Nomenclatura de Recursos ECS
-- **Cluster com ALB:** `cluster-bia-alb`
-- **Cluster sem ALB:** `cluster-bia`
-- **Task Definition com ALB:** `task-def-bia-alb` (prefixo task-def e sufixo -alb)
-- **Task Definition sem ALB:** `task-def-bia` (prefixo task-def)
-- **Service:** `service-bia` (sem alb)
-- **Service:** `service-bia-alb` (com alb)
+- **Cluster com ALB:** `cluster-luzia-alb`
+- **Cluster sem ALB:** `cluster-luzia`
+- **Task Definition com ALB:** `task-def-luzia-alb` (prefixo task-def e sufixo -alb)
+- **Task Definition sem ALB:** `task-def-luzia` (prefixo task-def)
+- **Service:** `service-luzia` (sem alb)
+- **Service:** `service-luzia-alb` (com alb)
 
 ### Configuração do Container (Task Definition)
 - **Memory Soft Limit:** 400 MB
@@ -51,40 +51,40 @@
 
 ### Target Group (ALB)
 - **Deregistration Delay:** 30 segundos
-- **Cenário 2 (com ALB):** `tg-bia-alb` — tipo instance
-- **Cenário 3 (com ALB + Cache):** `tg-bia-app` — tipo ip (necessário para awsvpc)
+- **Cenário 2 (com ALB):** `tg-luzia-alb` — tipo instance
+- **Cenário 3 (com ALB + Cache):** `tg-luzia-app` — tipo ip (necessário para awsvpc)
 
 ### Sufixos dos Security Groups
 
 #### Cenário 1: Sem ALB (Inicial)
-- **Database (RDS):** `bia-db`
-- **EC2 (ECS Cluster):** `bia-web`
+- **Database (RDS):** `luzia-db`
+- **EC2 (ECS Cluster):** `luzia-web`
 
 #### Cenário 2: Com ALB (Evolução)
-- **Database (RDS):** `bia-db`
-- **Application Load Balancer:** `bia-alb`
-- **EC2 (ECS Cluster):** `bia-ec2`
+- **Database (RDS):** `luzia-db`
+- **Application Load Balancer:** `luzia-alb`
+- **EC2 (ECS Cluster):** `luzia-ec2`
 
 #### Cenário 3: Com ALB + Cache (Evolução com Cache)
-- **Database (RDS):** `bia-db`
-- **Application Load Balancer:** `bia-alb`
-- **EC2 (ECS Cluster):** `bia-cluster`
-- **Serviço da aplicação (ECS):** `bia-app`
-- **Serviço de cache (ECS):** `bia-cache`
+- **Database (RDS):** `luzia-db`
+- **Application Load Balancer:** `luzia-alb`
+- **EC2 (ECS Cluster):** `luzia-cluster`
+- **Serviço da aplicação (ECS):** `luzia-app`
+- **Serviço de cache (ECS):** `luzia-cache`
 
 ## Nomenclatura de Serviços ECS (Cenário 3: Com ALB + Cache)
-- **Cluster:** `cluster-bia-app`
-- **Serviço da aplicação:** `service-bia-app`
-- **Serviço de cache:** `service-bia-cache`
+- **Cluster:** `cluster-luzia-app`
+- **Serviço da aplicação:** `service-luzia-app`
+- **Serviço de cache:** `service-luzia-cache`
 
 ### Network Mode (Cenário 3)
 - **Modo:** `awsvpc` — cada task recebe ENI própria com IP privado dedicado
 - **Impacto:** Security Groups aplicados diretamente na ENI da task, não na EC2
-- **EC2 (bia-cluster):** inbound vazio — controle de acesso é feito nos SGs das tasks
+- **EC2 (luzia-cluster):** inbound vazio — controle de acesso é feito nos SGs das tasks
 
 ### Service Discovery — Cache (Cenário 3)
-- **Serviço:** `service-bia-cache` registrado no AWS Cloud Map
-- **Acesso:** `service-bia-app` resolve o endereço do cache via DNS interno (Cloud Map)
+- **Serviço:** `service-luzia-cache` registrado no AWS Cloud Map
+- **Acesso:** `service-luzia-app` resolve o endereço do cache via DNS interno (Cloud Map)
 - **Benefício:** Sem necessidade de hardcodar IP do cache como variável de ambiente
 - **Alternativa possível:** Em vez de cache como serviço ECS, poderia ser utilizado o **Amazon ElastiCache** (Redis/Memcached gerenciado), que oferece alta disponibilidade e gerenciamento automático — porém é um estágio mais avançado do aprendizado
 
@@ -92,51 +92,51 @@
 
 ### Padrão de Descrição das Inbound Rules
 - **Formato obrigatório:** "acesso vindo de (nome do security group)"
-- **Exemplo:** "acesso vindo de bia-dev"
+- **Exemplo:** "acesso vindo de luzia-dev"
 - **Aplicação:** APENAS para inbound rules
 
-### Database (bia-db)
+### Database (luzia-db)
 **Inbound Rules:**
 - **Porta:** 5432 (PostgreSQL)
 - **Sources:** 
-  - `bia-dev` → Descrição: "acesso vindo de bia-dev"
-  - `bia-ec2` (quando com ALB) → Descrição: "acesso vindo de bia-ec2"
-  - `bia-web` (quando sem ALB) → Descrição: "acesso vindo de bia-web"
-  - `bia-app` (quando com ALB + Cache) → Descrição: "acesso vindo de bia-app"
+  - `luzia-dev` → Descrição: "acesso vindo de luzia-dev"
+  - `luzia-ec2` (quando com ALB) → Descrição: "acesso vindo de luzia-ec2"
+  - `luzia-web` (quando sem ALB) → Descrição: "acesso vindo de luzia-web"
+  - `luzia-app` (quando com ALB + Cache) → Descrição: "acesso vindo de luzia-app"
 
-### EC2 com ALB (bia-ec2)
+### EC2 com ALB (luzia-ec2)
 **Inbound Rules:**
 - **Protocolo:** All TCP
-- **Source:** `bia-alb` → Descrição: "acesso vindo de bia-alb"
+- **Source:** `luzia-alb` → Descrição: "acesso vindo de luzia-alb"
 - **Motivo:** Portas aleatórias do ECS Service
 
-### EC2 com ALB + Cache (bia-cluster)
+### EC2 com ALB + Cache (luzia-cluster)
 **Inbound Rules:** nenhuma — controle de acesso feito nos SGs das tasks via awsvpc
 **Outbound:** `0.0.0.0/0`
 
-### Serviço da aplicação (bia-app) — Cenário 3
+### Serviço da aplicação (luzia-app) — Cenário 3
 **Inbound Rules:**
 - **Porta:** 8080
-- **Source:** `bia-alb` → Descrição: "acesso vindo de bia-alb"
+- **Source:** `luzia-alb` → Descrição: "acesso vindo de luzia-alb"
 
-### Serviço de cache (bia-cache) — Cenário 3
+### Serviço de cache (luzia-cache) — Cenário 3
 **Inbound Rules:**
 - **Porta:** 6379 (Redis)
-- **Source:** `bia-app` → Descrição: "acesso vindo de bia-app"
+- **Source:** `luzia-app` → Descrição: "acesso vindo de luzia-app"
 
-### Application Load Balancer (bia-alb)
+### Application Load Balancer (luzia-alb)
 **Inbound Rules:**
 - **Porta:** 80/443
 - **Source:** 0.0.0.0/0 → Descrição: "acesso público HTTP/HTTPS"
 
-## EC2 de Desenvolvimento (bia-dev)
+## EC2 de Desenvolvimento (luzia-dev)
 
 ### Configuração da Instância
-- **Nome (Tag Name):** `bia-dev`
+- **Nome (Tag Name):** `luzia-dev`
 - **Tipo:** `t3.micro`
 - **AMI:** Amazon Linux 2023 (última versão disponível)
-- **Key Pair:** `bia-dev`
-- **Security Group:** `bia-dev`
+- **Key Pair:** `luzia-dev`
+- **Security Group:** `luzia-dev`
 - **IAM Instance Profile:** `role-acesso-ssm` (obrigatório para acesso via SSM)
 - **Região:** `us-east-1` (Virginia)
 - **Subnet:** zona A (`us-east-1a`)
@@ -192,7 +192,7 @@
 ## Banco de Dados
 - **Aproveitamento:** Usar banco existente na infraestrutura
 - **Não criar:** Novos recursos RDS nos templates
-- **Security Group:** Manter `bia-db` preparado para conexão
+- **Security Group:** Manter `luzia-db` preparado para conexão
 
 ### Observações
 - As regras seguem o princípio de menor privilégio
