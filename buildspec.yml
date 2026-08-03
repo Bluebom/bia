@@ -3,7 +3,7 @@ version: 0.2
 env:
   variables:
     ECR_REGISTRY: 255748959698.dkr.ecr.us-east-1.amazonaws.com
-    ECR_REPO: bia
+    ECR_REPO: luzia
 
 phases:
   pre_build:
@@ -26,6 +26,6 @@ phases:
       - docker push $REPOSITORY_URI:latest
       - docker push $REPOSITORY_URI:$IMAGE_TAG
       - echo Gerando artefato da imagem para o ECS
-      - printf '[{"name":"bia","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - printf '[{"name":"luzia","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
 artifacts:
   files: imagedefinitions.json
