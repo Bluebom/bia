@@ -9,8 +9,8 @@ services:
       - redis
     environment:
       DB_USER: postgres
-      DB_PWD: postgres
-      DB_HOST: database
+      DB_PWD: 5qSpZ8ntEWAOYtlyTW7Y
+      DB_HOST: luzia.cthoik4ndeal.us-east-1.rds.amazonaws.com
       DB_PORT: 5432
       ## NAO PRECISA NA IMERSÃO DAQUI PRA BAIXO ## 
       # DB_SECRET_NAME: 
@@ -35,7 +35,7 @@ services:
     environment:
       - "POSTGRES_USER=postgres"
       - "POSTGRES_PASSWORD=postgres"
-      - "POSTGRES_DB=bia"
+      - "POSTGRES_DB=luzia"
     ports:
       - 5433:5432
     volumes:
