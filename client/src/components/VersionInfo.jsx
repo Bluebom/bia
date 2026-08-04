@@ -11,14 +11,14 @@ const VersionInfo = () => {
     if (import.meta.env.VITE_API_URL) {
       return import.meta.env.VITE_API_URL;
     }
-
-    // Desenvolvimento local - porta 5173 (Vite dev server)
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      return 'http://localhost:8080';
+    
+    // Se estiver rodando no mesmo domínio (produção integrada)
+    if (window.location.port === '8080') {
+      return window.location.origin;
     }
-
-    // Produção - URL relativa (funciona com qualquer domínio ou ALB)
-    return '';
+    
+    // Desenvolvimento local - inferir porta 8080
+    return 'http://localhost:8080';
   };
 
   const checkApiHealth = async () => {
