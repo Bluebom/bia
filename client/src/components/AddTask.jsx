@@ -59,7 +59,7 @@ const AddTask = ({ onAdd }) => {
       </div>
       
       <button type="submit" className="btn btn-block success">
-        Adicionar task com CI/CD V2
+        Adicionar task com CI/CD V0
       </button>
       
       <Modal
